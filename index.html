@@ -1,0 +1,112 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2em;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    #countdown {
+      font-size: 2em;
+      margin-bottom: 0.5em;
+      width: 100%;
+      text-align: center;
+    }
+    .progress-container {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 30px;
+      position: relative;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #4caf50;
+      transition: width 1s linear;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+    }
+    #errorMessage {
+      color: red;
+      font-size: 1.2em;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Countdown -->
+  <div id="countdown">00:00:00:00</div>
+  <!-- Progress bar container -->
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar" style="width: 100%;">100.00%</div>
+  </div>
+
+  <!-- Error message for missing query parameters -->
+  <div id="errorMessage" style="display: none;">
+    <p>Error: Please provide valid start and end times in the URL query parameters.</p>
+  </div>
+
+  <script>
+    // Function to get URL query parameters for start and end times
+    function getParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const start = new Date(urlParams.get('start'));
+      const end = new Date(urlParams.get('end'));
+      return { start, end };
+    }
+
+    // Function to update progress information
+    function updateProgress(start, end) {
+      const now = new Date();
+      const total = end - start;
+      const elapsed = now - start;
+      const remaining = end - now;
+
+      let percent = Math.min(Math.max((elapsed / total) * 100, 0), 100);
+
+      // Set the progress bar width and text
+      const progressBar = document.getElementById("progressBar");
+      progressBar.style.width = percent + "%";
+      progressBar.textContent = `${percent.toFixed(2)}%`;
+
+      const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+      // Format the countdown as 00:00:00:00 (DD:HH:MM:SS)
+      if (remaining > 0) {
+        document.getElementById("countdown").innerText = 
+          `${days.toString().padStart(2, '0')}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      } else {
+        document.getElementById("countdown").innerText = "00:00:00:00";
+      }
+    }
+
+    // This function will check the query parameters and start the tracking if valid
+    function initializePage() {
+      const { start, end } = getParams();
+      
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        // If parameters are missing or invalid, show an error message
+        document.getElementById("errorMessage").style.display = "block";
+      } else {
+        // If parameters are present, start tracking immediately
+        document.getElementById("errorMessage").style.display = "none";
+        updateProgress(start, end);
+        setInterval(() => updateProgress(start, end), 1000);
+      }
+    }
+
+    // Initialize the page when it loads
+    window.addEventListener('DOMContentLoaded', initializePage);
+  </script>
+
+
+</body></html>
