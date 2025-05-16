@@ -37,9 +37,27 @@
       font-size: 1.2em;
       display: none;
     }
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    body:hover #overlay {
+      opacity: 0;
+    }
   </style>
 </head>
 <body>
+<div id="overlay"></div>
+
   <!-- Countdown -->
   <div id="countdown">00:00:00:00</div>
   <!-- Progress bar container -->
